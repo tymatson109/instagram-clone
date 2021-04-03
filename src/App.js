@@ -6,6 +6,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 import ImageUpload from './components/ImageUpload';
+import Route from './components/Route';
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline'
+import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 
 function getModalStyle() {
     const top = 50;
@@ -36,11 +39,13 @@ const App = () =>
 
     const [posts, setPosts] = useState([]);
     const [open, setOpen] = useState(false);
+    const [openPost, setOpenPost] = useState(false);
     const [openSignIn, setOpenSignIn] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [user, setUser] = useState(null)
+    const [isHome, setIsHome] = useState(false);
 
     useEffect(() =>
     {
@@ -98,9 +103,39 @@ const App = () =>
             .catch((error) => alert(error.message));
     }
 
-    return (
+    useEffect(() => {
+        isHome === true ? profile() : home()
+    }, [isHome])
 
+    const profile = () => {
+        window.history.pushState({}, '', '/profile');
+        const navEvent = new PopStateEvent('popstate');
+        window.dispatchEvent(navEvent);
+    }
+
+    const home = () => {
+        window.history.pushState({}, '', '/');
+        console.log('hi')
+
+        const navEvent = new PopStateEvent('popstate');
+        window.dispatchEvent(navEvent);
+    }
+
+    return (
         <div className="app">
+            <div className="app__postModal">
+                <Modal open={openPost} onClose={() => setOpenPost(false)} >
+                    <div style={modalStyle} className={classes.paper}>
+                        <center>
+                            <img className="app__headerImage" 
+                                src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" 
+                                alt="instagram logo"
+                            />
+                        </center>
+                        {user && <ImageUpload username={user.displayName} />}
+                    </div>
+                </Modal>
+            </div>
             <div className="app__signInModal">
                 <Modal open={openSignIn} onClose={() => setOpenSignIn(false)}>
                     <div style={modalStyle} className={classes.paper}>
@@ -146,7 +181,15 @@ const App = () =>
                 alt="instagram logo"
                 />
                 {user 
-                ? (<Button onClick={() => auth.signOut()}>Log Out</Button>)
+                ? (
+                <div className="app__headerMenu">
+                    <button className="app__headerMenuItem" onClick={() => auth.signOut()}>Log Out</button>
+                    {isHome === true
+                        ? <PersonOutlineIcon onClick={() => setIsHome(false)} className='app__headerMenuItem' />
+                        : <HomeOutlinedIcon onClick={() => setIsHome(true)} className='app__headerMenuItem' />
+                    }
+                </div>
+                )
                 : (
                     <div className="app__loginContainer">
                         <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
@@ -155,21 +198,30 @@ const App = () =>
                 )
                 }
             </div>
-            <div className="app__posts">
-                <div className="app__postsLeft">
-                    {        
-                        posts.map(({post, id}) => {
-                            return <Post key={id} postId={id} user={user} caption={post.caption} username={post.username} imageUrl={post.imageUrl} />
-                        })
-                    }
+            <Route path="/">
+                <div className="app__posts">
+                    <div className="app__postsLeft">
+                        {        
+                            posts.map(({post, id}) => {
+                                return <Post key={id} postId={id} user={user} caption={post.caption} username={post.username} imageUrl={post.imageUrl} />
+                            })
+                        }
+                    </div>
+                    <div className="app__postsRight">
+                    </div>
                 </div>
-                <div className="app__postsRight">
-                </div>
-            </div>
-            {user?.displayName 
-                ? <ImageUpload username={user.displayName} />
-                : <h3 className="app__notLogged">Login to Upload</h3>
-            }
+                {user?.displayName 
+                    ? (
+                        <div className="app__postButton">
+                            <Button onClick={() => setOpenPost(true)} >Post A Pic</Button>
+                        </div>
+                    )
+                    : <h3 className="app__notLogged">Login to Upload</h3>
+                }
+            </Route>
+            <Route path="/profile">
+                hi
+            </Route>
         </div>
     );
 };  

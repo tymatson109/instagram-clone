@@ -43,3 +43,35 @@
     text-align: center;
     padding: 20px;
 }
+
+.app__postButton {
+    display: flex;
+    justify-content: center; 
+    padding: 50px;
+}
+
+.app__headerMenu {
+    display: flex;
+    align-items: center;
+    
+}
+
+.app__headerMenuItem {
+    padding: 10px 10px;
+}
+
+.app__headerMenu button {
+    border: none;
+    background-color: transparent;
+}
+
+.app__headerMenuItem:hover {
+    background-color: rgb(236, 236, 236);
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.app__headerMenu .MuiSvgIcon-root {
+    margin-left: 20px;
+    height: 25px;
+}

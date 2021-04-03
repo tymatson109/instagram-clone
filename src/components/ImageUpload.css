@@ -11,3 +11,7 @@
 .imageUpload__progress {
     width: 100%;
 }
+
+.imageUpload .item {
+    padding: 10px;;
+}
